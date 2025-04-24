@@ -1,5 +1,8 @@
 package com.mvc;
 
+import com.mvc.filters.structure.OverworldStructureFilter;
+import com.seedfinding.mccore.rand.ChunkRand;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -53,6 +56,9 @@ public class Main {
     }
 
     public static boolean filterStructureSeed(long structureSeed) {
-        return true;
+        ChunkRand chunkRand = new ChunkRand(structureSeed);
+        OverworldStructureFilter overworldStructureFilter = new OverworldStructureFilter(structureSeed, chunkRand);
+
+        return overworldStructureFilter.filterStructures();
     }
 }
