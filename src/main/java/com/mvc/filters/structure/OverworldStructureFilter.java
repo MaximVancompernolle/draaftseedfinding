@@ -31,14 +31,14 @@ public class OverworldStructureFilter {
         Village village = new Village(Config.VERSION);
         CPos villagePos = village.getInRegion(structureSeed, 0, 0, chunkRand);
 
-        return villagePos.getX() <= Config.VILLAGE_DISTANCE && villagePos.getZ() <= Config.VILLAGE_DISTANCE;
+        return villagePos.getMagnitudeSq() <= Config.VILLAGE_DISTANCE;
     }
 
     private boolean hasTemple() {
         DesertPyramid temple = new DesertPyramid(Config.VERSION);
         templePos = temple.getInRegion(structureSeed, 0, 0, chunkRand);
 
-        return templePos.getX() <= Config.TEMPLE_DISTANCE && templePos.getZ() <= Config.TEMPLE_DISTANCE;
+        return templePos.getMagnitudeSq() <= Config.TEMPLE_DISTANCE;
     }
 
     private boolean hasTempleLoot() {
