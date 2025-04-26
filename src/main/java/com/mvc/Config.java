@@ -7,7 +7,7 @@ import java.io.File;
 import static com.mvc.Config.FILTER_TYPE.*;
 
 public class Config {
-    public static final int SEED_MATCHES = 10_000;
+    public static final int SEED_MATCHES = 1_000;
     public static final int LOG_DELAY = 10_000;
     public static final MCVersion VERSION = MCVersion.v1_16_1;
     public static final FILTER_TYPE FILTER = RANDOM;

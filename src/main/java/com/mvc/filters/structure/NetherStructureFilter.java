@@ -1,7 +1,10 @@
 package com.mvc.filters.structure;
 
 import com.mvc.Config;
+import com.seedfinding.mcbiome.biome.Biomes;
+import com.seedfinding.mcbiome.source.NetherBiomeSource;
 import com.seedfinding.mccore.rand.ChunkRand;
+import com.seedfinding.mccore.util.block.BlockDirection;
 import com.seedfinding.mccore.util.pos.CPos;
 import com.seedfinding.mcfeature.structure.BastionRemnant;
 import com.seedfinding.mcfeature.structure.Fortress;
@@ -9,6 +12,7 @@ import com.seedfinding.mcfeature.structure.Fortress;
 public class NetherStructureFilter {
     private final long structureSeed;
     private final ChunkRand chunkRand;
+    private CPos fortressPos;
 
     public NetherStructureFilter(long structureSeed, ChunkRand chunkRand) {
         this.structureSeed = structureSeed;
@@ -16,32 +20,44 @@ public class NetherStructureFilter {
     }
 
     public boolean filterStructures() {
-        return hasBastion() && hasFortress();
+        return hasBastion() && hasFortress() && isSSV();
     }
 
     private boolean hasBastion() {
         BastionRemnant bastion = new BastionRemnant(Config.VERSION);
-        CPos bastionPP = bastion.getInRegion(structureSeed, 0, 0, chunkRand);
-        CPos bastionPN = bastion.getInRegion(structureSeed, 0, -1, chunkRand);
-        CPos bastionNN = bastion.getInRegion(structureSeed, -1, -1, chunkRand);
-        CPos bastionNP = bastion.getInRegion(structureSeed, -1, 0, chunkRand);
 
-        return (bastionPP != null && bastionPP.getMagnitude() <= Config.BASTION_DISTANCE) ||
-                (bastionPN != null && bastionPN.getMagnitude() <= Config.BASTION_DISTANCE) ||
-                (bastionNN != null && bastionNN.getMagnitude() <= Config.BASTION_DISTANCE) ||
-                (bastionNP != null && bastionNP.getMagnitude() <= Config.BASTION_DISTANCE);
+        for (int x = -1; x <= 0; x++) {
+            for (int z = -1; z <= 0; z++) {
+                CPos bastionPos = bastion.getInRegion(structureSeed, x, z, chunkRand);
+                if (bastionPos != null && bastionPos.getMagnitude() <= Config.BASTION_DISTANCE) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean hasFortress() {
         Fortress fortress = new Fortress(Config.VERSION);
-        CPos fortressPP = fortress.getInRegion(structureSeed, 0, 0, chunkRand);
-        CPos fortressPN = fortress.getInRegion(structureSeed, 0, -1, chunkRand);
-        CPos fortressNN = fortress.getInRegion(structureSeed, -1, -1, chunkRand);
-        CPos fortressNP = fortress.getInRegion(structureSeed, -1, 0, chunkRand);
 
-        return (fortressPP != null && fortressPP.getMagnitude() <= Config.FORTRESS_DISTANCE) ||
-                (fortressPN != null && fortressPN.getMagnitude() <= Config.FORTRESS_DISTANCE) ||
-                (fortressNN != null && fortressNN.getMagnitude() <= Config.FORTRESS_DISTANCE) ||
-                (fortressNP != null && fortressNP.getMagnitude() <= Config.FORTRESS_DISTANCE);
+        for (int x = -1; x <= 0; x++) {
+            for (int z = -1; z <= 0; z++) {
+                fortressPos = fortress.getInRegion(structureSeed, x, z, chunkRand);
+                if (fortressPos != null && fortressPos.getMagnitude() <= Config.FORTRESS_DISTANCE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isSSV() {
+        NetherBiomeSource netherBiomeSource = new NetherBiomeSource(Config.VERSION, structureSeed);
+
+        return netherBiomeSource.getBiome(fortressPos.toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(-1, 0).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(1, 0).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(0, -1).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(0, 1).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY);
     }
 }

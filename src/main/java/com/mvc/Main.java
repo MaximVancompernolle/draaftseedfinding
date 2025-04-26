@@ -1,5 +1,6 @@
 package com.mvc;
 
+import com.mvc.filters.structure.NetherStructureFilter;
 import com.mvc.filters.structure.OverworldStructureFilter;
 import com.seedfinding.mccore.rand.ChunkRand;
 
@@ -76,8 +77,9 @@ public class Main {
     private static boolean filterStructureSeed(long structureSeed) {
         ChunkRand chunkRand = new ChunkRand(structureSeed);
         OverworldStructureFilter overworldStructureFilter = new OverworldStructureFilter(structureSeed, chunkRand);
+        NetherStructureFilter netherStructureFilter = new NetherStructureFilter(structureSeed, chunkRand);
 
-        return overworldStructureFilter.filterStructures();
+        return netherStructureFilter.filterStructures() && overworldStructureFilter.filterStructures();
     }
 
     private static void initialize() throws IOException {
