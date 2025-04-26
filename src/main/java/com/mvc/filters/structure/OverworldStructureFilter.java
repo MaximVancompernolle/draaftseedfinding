@@ -1,13 +1,14 @@
 package com.mvc.filters.structure;
 
 import com.mvc.Config;
+import com.mvc.filters.LootTables;
 import com.seedfinding.mccore.rand.ChunkRand;
 import com.seedfinding.mccore.util.pos.CPos;
 import com.seedfinding.mcfeature.loot.LootContext;
 import com.seedfinding.mcfeature.loot.LootTable;
-import com.seedfinding.mcfeature.loot.MCLootTables;
 import com.seedfinding.mcfeature.loot.item.Item;
 import com.seedfinding.mcfeature.loot.item.ItemStack;
+import com.seedfinding.mcfeature.loot.item.Items;
 import com.seedfinding.mcfeature.structure.DesertPyramid;
 import com.seedfinding.mcfeature.structure.Village;
 
@@ -24,27 +25,29 @@ public class OverworldStructureFilter {
     }
 
     public boolean filterStructures() {
-        return hasVillage() && hasTemple();
+        return hasVillage() && hasTemple() && hasTempleLoot();
     }
 
     private boolean hasVillage() {
         Village village = new Village(Config.VERSION);
         CPos villagePos = village.getInRegion(structureSeed, 0, 0, chunkRand);
 
-        return villagePos.getMagnitudeSq() <= Config.VILLAGE_DISTANCE;
+        return villagePos.getMagnitude() <= Config.VILLAGE_DISTANCE;
     }
 
     private boolean hasTemple() {
         DesertPyramid temple = new DesertPyramid(Config.VERSION);
         templePos = temple.getInRegion(structureSeed, 0, 0, chunkRand);
 
-        return templePos.getMagnitudeSq() <= Config.TEMPLE_DISTANCE;
+        return templePos.getMagnitude() <= Config.TEMPLE_DISTANCE;
     }
 
     private boolean hasTempleLoot() {
         chunkRand.setDecoratorSeed(structureSeed, templePos.getX() << 4, templePos.getZ() << 4, 40003, Config.VERSION);
-        LootTable lootTable = MCLootTables.DESERT_PYRAMID_CHEST.get();
+        LootTable lootTable = LootTables.DESERT_PYRAMID_CHEST;
         lootTable.apply(Config.VERSION);
+
+        int gunpowder = 0;
 
         for (int i = 0; i < 4; i++) {
             LootContext lootContext = new LootContext(chunkRand.nextLong(), Config.VERSION);
@@ -53,10 +56,12 @@ public class OverworldStructureFilter {
             for (ItemStack itemStack : chest) {
                 Item item = itemStack.getItem();
 
-                // check for loot here
+                if (item.equals(Items.GUNPOWDER)) {
+                    gunpowder += itemStack.getCount();
+                }
             }
         }
 
-        return false;
+        return gunpowder >= 10;
     }
 }
