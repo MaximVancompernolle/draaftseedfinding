@@ -26,10 +26,10 @@ public class NetherStructureFilter {
         CPos bastionNN = bastion.getInRegion(structureSeed, -1, -1, chunkRand);
         CPos bastionNP = bastion.getInRegion(structureSeed, -1, 0, chunkRand);
 
-        return (bastionPP != null && bastionPP.getMagnitudeSq() <= Config.BASTION_DISTANCE) ||
-                (bastionPN != null && bastionPN.getMagnitudeSq() <= Config.BASTION_DISTANCE) ||
-                (bastionNN != null && bastionNN.getMagnitudeSq() <= Config.BASTION_DISTANCE) ||
-                (bastionNP != null && bastionNP.getMagnitudeSq() <= Config.BASTION_DISTANCE);
+        return (bastionPP != null && bastionPP.getMagnitude() <= Config.BASTION_DISTANCE) ||
+                (bastionPN != null && bastionPN.getMagnitude() <= Config.BASTION_DISTANCE) ||
+                (bastionNN != null && bastionNN.getMagnitude() <= Config.BASTION_DISTANCE) ||
+                (bastionNP != null && bastionNP.getMagnitude() <= Config.BASTION_DISTANCE);
     }
 
     private boolean hasFortress() {
@@ -39,9 +39,9 @@ public class NetherStructureFilter {
         CPos fortressNN = fortress.getInRegion(structureSeed, -1, -1, chunkRand);
         CPos fortressNP = fortress.getInRegion(structureSeed, -1, 0, chunkRand);
 
-        return (fortressPP != null && fortressPP.getMagnitudeSq() <= Config.FORTRESS_DISTANCE) ||
-                (fortressPN != null && fortressPN.getMagnitudeSq() <= Config.FORTRESS_DISTANCE) ||
-                (fortressNN != null && fortressNN.getMagnitudeSq() <= Config.FORTRESS_DISTANCE) ||
-                (fortressNP != null && fortressNP.getMagnitudeSq() <= Config.FORTRESS_DISTANCE);
+        return (fortressPP != null && fortressPP.getMagnitude() <= Config.FORTRESS_DISTANCE) ||
+                (fortressPN != null && fortressPN.getMagnitude() <= Config.FORTRESS_DISTANCE) ||
+                (fortressNN != null && fortressNN.getMagnitude() <= Config.FORTRESS_DISTANCE) ||
+                (fortressNP != null && fortressNP.getMagnitude() <= Config.FORTRESS_DISTANCE);
     }
 }
