@@ -20,7 +20,7 @@ public class NetherStructureFilter {
     }
 
     public boolean filterStructures() {
-        return hasBastion() && hasFortress() && isSSV();
+        return hasFortress() && isSSV();
     }
 
     private boolean hasBastion() {
@@ -55,9 +55,9 @@ public class NetherStructureFilter {
         NetherBiomeSource netherBiomeSource = new NetherBiomeSource(Config.VERSION, structureSeed);
 
         return netherBiomeSource.getBiome(fortressPos.toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
-                netherBiomeSource.getBiome(fortressPos.add(-1, 0).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
-                netherBiomeSource.getBiome(fortressPos.add(1, 0).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
-                netherBiomeSource.getBiome(fortressPos.add(0, -1).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
-                netherBiomeSource.getBiome(fortressPos.add(0, 1).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY);
+                netherBiomeSource.getBiome(fortressPos.add(-4, 0).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(4, 0).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(0, -4).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY) &&
+                netherBiomeSource.getBiome(fortressPos.add(0, 4).toBlockPos()).equals(Biomes.SOUL_SAND_VALLEY);
     }
 }

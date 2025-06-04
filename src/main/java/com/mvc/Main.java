@@ -1,5 +1,6 @@
 package com.mvc;
 
+import com.mvc.filters.structure.EndStructureFilter;
 import com.mvc.filters.structure.NetherStructureFilter;
 import com.mvc.filters.structure.OverworldStructureFilter;
 import com.seedfinding.mccore.rand.ChunkRand;
@@ -21,7 +22,7 @@ public class Main {
         if (Config.FILTER.equals(Config.FILTER_TYPE.FILE)) {
             filterFile();
         } else if (Config.FILTER.equals(Config.FILTER_TYPE.INCREMENTAL)) {
-            filterIncremental();
+            filterIncremental(100476778);
         } else if (Config.FILTER.equals(Config.FILTER_TYPE.RANDOM)) {
             filterRandom();
         } else {
@@ -78,8 +79,9 @@ public class Main {
         ChunkRand chunkRand = new ChunkRand(structureSeed);
         OverworldStructureFilter overworldStructureFilter = new OverworldStructureFilter(structureSeed, chunkRand);
         NetherStructureFilter netherStructureFilter = new NetherStructureFilter(structureSeed, chunkRand);
+        EndStructureFilter endStructureFilter = new EndStructureFilter(structureSeed, chunkRand);
 
-        return netherStructureFilter.filterStructures() && overworldStructureFilter.filterStructures();
+        return netherStructureFilter.filterStructures() && endStructureFilter.filterStructures() && overworldStructureFilter.filterStructures();
     }
 
     private static void initialize() throws IOException {

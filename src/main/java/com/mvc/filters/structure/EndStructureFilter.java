@@ -3,6 +3,7 @@ package com.mvc.filters.structure;
 import com.mvc.Config;
 import com.seedfinding.mcbiome.source.EndBiomeSource;
 import com.seedfinding.mccore.rand.ChunkRand;
+import com.seedfinding.mccore.util.math.DistanceMetric;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mccore.util.pos.CPos;
 import com.seedfinding.mccore.util.pos.RPos;
@@ -18,7 +19,6 @@ public class EndStructureFilter {
     private final long structureSeed;
     private final ChunkRand chunkRand;
     private BPos gatewayPos;
-    private CPos cityPos;
 
     public EndStructureFilter(long structureSeed, ChunkRand chunkRand) {
         this.structureSeed = structureSeed;
@@ -27,8 +27,7 @@ public class EndStructureFilter {
 
     public boolean filterStructures() {
         firstGatewayPos();
-
-        return hasCity() && hasShip();
+        return hasCity();
     }
 
     private void firstGatewayPos() {
@@ -47,12 +46,12 @@ public class EndStructureFilter {
     private boolean hasCity() {
         RPos gatewayRegion = gatewayPos.toRegionPos(20 << 4);
         EndCity city = new EndCity(Config.VERSION);
-        cityPos = city.getInRegion(structureSeed, gatewayRegion.getX(), gatewayRegion.getZ(), chunkRand);
+        CPos cityPos = city.getInRegion(structureSeed, gatewayRegion.getX(), gatewayRegion.getZ(), chunkRand);
 
-        return cityPos.getMagnitude() <= Config.END_CITY_DISTANCE;
-    }
+        if (!(cityPos.distanceTo(gatewayPos.toChunkPos(), DistanceMetric.EUCLIDEAN) <= Config.END_CITY_DISTANCE)) {
+            return false;
+        }
 
-    private boolean hasShip() {
         EndCityGenerator ecg = new EndCityGenerator(Config.VERSION);
         EndBiomeSource endBiomeSource = new EndBiomeSource(Config.VERSION, structureSeed);
         EndTerrainGenerator endTerrainGenerator = new EndTerrainGenerator(endBiomeSource);
@@ -61,6 +60,6 @@ public class EndStructureFilter {
             return false;
         }
 
-        return ecg.hasShip();
+        return ecg.hasShip() && ecg.getLootPos().size() > 2;
     }
 }
