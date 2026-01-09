@@ -8,10 +8,18 @@ import com.seedfinding.mccore.rand.ChunkRand;
 import com.seedfinding.mccore.state.Dimension;
 import com.seedfinding.mccore.util.data.Pair;
 import com.seedfinding.mccore.util.pos.BPos;
+import com.seedfinding.mccore.util.pos.CPos;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -21,6 +29,7 @@ public class Main {
     private static long nextTime = 0;
     private static long currentTime;
     private static FileWriter output;
+    private static FileWriter shOutput;
     public static void main(String[] args) throws IOException {
         initialize();
 
@@ -30,6 +39,8 @@ public class Main {
             filterIncremental(100000000);
         } else if (Config.FILTER.equals(Config.FILTER_TYPE.RANDOM)) {
             filterRandom();
+        } else if (Config.FILTER.equals(Config.FILTER_TYPE.SERVER)) {
+            filterServer();
         } else {
             throw new RuntimeException("Define filter type as FILE, INCREMENTAL, or RANDOM in com.mvc.Config");
         }
@@ -42,6 +53,45 @@ public class Main {
 
         while (scanner.hasNextLong() && seedMatches < Config.SEED_MATCHES) {
             checkSeed(scanner.nextLong());
+        }
+    }
+
+    private static void filterServer() throws IOException {
+        Path cacheFile = Paths.get("./.seed");
+        long start = 11769671;
+        if (Files.isRegularFile(cacheFile)) {
+            Scanner scanner = new Scanner(cacheFile.toFile());
+            start = scanner.nextLong();
+        }
+        final long realStart = start;
+
+        try {
+            //noinspection InfiniteLoopStatement
+            while (true) {
+                // Our actual seedfinding
+                checkSeed(start);
+
+                // everything else lol!
+                start++;
+                if (start % 4096 == 0) {
+                    Thread.sleep(1);
+                }
+                if ((start % 4194304) == 0) {
+                    // cache the seed we are on.
+                    try {
+                        // Creates a new file or overwrites an existing one by default.
+                        Files.writeString(cacheFile, Long.toString(start));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Found seed matches thus far: " + seedMatches);
+                    System.out.println("Scanned seeds: " + (start - realStart));
+                    output.flush();
+                    shOutput.flush();
+                }
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,12 +114,12 @@ public class Main {
         }
     }
 
-//    private static void getStrongholds(long seed) throws IOException {
-//        ChunkRand chunkRand = new ChunkRand(seed);
-//        OverworldStructureFilter overworldStructureFilter = new OverworldStructureFilter(seed, chunkRand);
-//        CPos[] strongholds = overworldStructureFilter.getStrongholds();
-//        output.write(seed + " " + Arrays.toString(strongholds) + "\n");
-//    }
+    private static void getStrongholds(long seed) throws IOException {
+        ChunkRand chunkRand = new ChunkRand(seed);
+        OverworldStructureFilter overworldStructureFilter = new OverworldStructureFilter(seed, chunkRand);
+        CPos[] strongholds = overworldStructureFilter.getStrongholds();
+        shOutput.write(seed + " " + Arrays.toString(strongholds) + "\n");
+    }
 
 //    private static void getNetherStructures(long seed) throws IOException {
 //        ChunkRand chunkRand = new ChunkRand();
@@ -96,6 +146,7 @@ public class Main {
 
                     if (matchedWorldSeed != null) {
                         output.write(matchedWorldSeed + " " + filteredWorldSeed.getSecond() + "\n");
+                        getStrongholds(matchedWorldSeed);
                         seedMatches++;
                     }
                 }
@@ -104,12 +155,16 @@ public class Main {
                 seedMatches++;
             }
         }
-        seedsChecked++;
-        currentTime = System.currentTimeMillis();
 
-        if (currentTime > nextTime) {
-            nextTime = currentTime + Config.LOG_DELAY;
-            System.out.printf("%,d seeds checked with %,d matches\r", seedsChecked, seedMatches);
+        // Don't print log messages on the server / don't query system time.
+        if (!Config.SERVER_OPTIMIZE) {
+            seedsChecked++;
+            currentTime = System.currentTimeMillis();
+
+            if (currentTime > nextTime) {
+                nextTime = currentTime + Config.LOG_DELAY;
+                System.out.printf("%,d seeds checked with %,d matches\r", seedsChecked, seedMatches);
+            }
         }
     }
 
@@ -146,7 +201,12 @@ public class Main {
         seedMatches = 0;
         nextTime = 0;
         currentTime = System.currentTimeMillis();
-        output = new FileWriter(Config.OUTPUT_FILE);
+
+        // Make the directory for our output file.
+        Config.OUTPUT_FILE.getParentFile().mkdirs();
+
+        shOutput = new FileWriter(Config.STRONGHOLD_OUTPUT_FILE, true);
+        output = new FileWriter(Config.OUTPUT_FILE, true);
     }
 
     private static void finish() throws IOException {

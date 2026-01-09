@@ -11,19 +11,24 @@ public class Config {
     public static final int SEED_MATCHES = 100_000;
     public static final int LOG_DELAY = 10_000;
     public static final MCVersion VERSION = MCVersion.v1_16_1;
-    public static final FILTER_TYPE FILTER = RANDOM;
-    public static final Dimension DIMENSION = Dimension.NETHER;
+    public static final FILTER_TYPE FILTER = SERVER;
+    public static final Dimension DIMENSION = Dimension.OVERWORLD;
     public static final File INPUT_FILE = new File("./src/main/resources/input.txt");
-    public static final File OUTPUT_FILE = new File("./src/main/resources/output.txt");
+    public static final File OUTPUT_FILE = new File("./src/main/resources/output.txt");;
+    public static final File STRONGHOLD_OUTPUT_FILE = new File("./src/main/resources/sh_output.txt");
     public static final int VILLAGE_DISTANCE = 12;
     public static final int TEMPLE_DISTANCE = 12;
     public static final int BASTION_DISTANCE = 15;
     public static final int FORTRESS_DISTANCE = 15;
     public static final int END_CITY_DISTANCE = 6;
 
+    // Configs for running on server.
+    public static final boolean SERVER_OPTIMIZE = true;
+
     public enum FILTER_TYPE {
         FILE,
         INCREMENTAL,
-        RANDOM
+        RANDOM,
+        SERVER
     }
 }
