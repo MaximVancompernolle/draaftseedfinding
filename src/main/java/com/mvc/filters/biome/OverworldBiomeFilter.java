@@ -31,7 +31,10 @@ public class OverworldBiomeFilter {
         if (!hasMidgame()) {
             return new Pair<>(false, null);
         }
-        return fullScaleSearch(3, 64, true, true);
+        if (fullScaleSearch(3, 64, true, false).getFirst()) {
+            return fullScaleSearch(3, 16, true, true);
+        }
+        return new Pair<>(false, null);
     }
 
     private boolean hasMidgame() {
