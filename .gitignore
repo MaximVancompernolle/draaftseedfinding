@@ -4,6 +4,8 @@ src/main/resources/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 
+.seed
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
