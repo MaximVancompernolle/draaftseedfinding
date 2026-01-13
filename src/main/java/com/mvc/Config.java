@@ -12,6 +12,7 @@ public class Config {
     public static final int LOG_DELAY = 10_000;
     public static final MCVersion VERSION = MCVersion.v1_16_1;
     public static final FILTER_TYPE FILTER = SERVER;
+    public static final boolean FILE_HAS_ANNOTATIONS = true;
     public static final Dimension DIMENSION = Dimension.OVERWORLD;
     public static final File INPUT_FILE = new File("./src/main/resources/input.txt");
     public static final File OUTPUT_FILE = new File("./src/main/resources/output.txt");;

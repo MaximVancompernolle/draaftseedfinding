@@ -53,6 +53,9 @@ public class Main {
 
         while (scanner.hasNextLong() && seedMatches < Config.SEED_MATCHES) {
             checkSeed(scanner.nextLong());
+            if (Config.FILE_HAS_ANNOTATIONS) {
+                scanner.nextLine();
+            }
         }
     }
 

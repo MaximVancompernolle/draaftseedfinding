@@ -8,10 +8,7 @@ import com.seedfinding.mccore.rand.ChunkRand;
 import com.seedfinding.mccore.util.data.Pair;
 import com.seedfinding.mccore.util.pos.BPos;
 import com.seedfinding.mccore.util.pos.CPos;
-import com.seedfinding.mcfeature.structure.DesertPyramid;
-import com.seedfinding.mcfeature.structure.Monument;
-import com.seedfinding.mcfeature.structure.PillagerOutpost;
-import com.seedfinding.mcfeature.structure.Village;
+import com.seedfinding.mcfeature.structure.*;
 import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 
 import java.util.ArrayList;
@@ -31,11 +28,14 @@ public class OverworldBiomeFilter {
         if (!hasMidgame()) {
             return new Pair<>(false, null);
         }
-        return fullScaleSearch(3, 64, true, true);
+        if (fullScaleSearch(3, 64, true, false).getFirst()) {
+            return fullScaleSearch(3, 16, true, true);
+        }
+        return new Pair<>(false, null);
     }
 
     private boolean hasMidgame() {
-        return hasTemple() && hasVillage() && hasMonument() && hasOutpost() && hasMidgameTemples(5);
+        return hasTemple() && hasVillage() && hasMonument() && hasOutpost() && hasIgloo() && hasMidgameTemples(5);
     }
 
     private boolean hasVillage() {
@@ -56,6 +56,22 @@ public class OverworldBiomeFilter {
         OverworldTerrainGenerator overworldTerrainGenerator = new OverworldTerrainGenerator(overworldBiomeSource);
 
         return overworldTerrainGenerator.getBlockAt(templePos.toBlockPos(64).add(10, 10, 10)).get().equals(Blocks.AIR);
+    }
+
+    private boolean hasIgloo() {
+        Igloo igloo = new Igloo(Config.VERSION);
+
+        for (int x = -6; x <= 5; x++) {
+            for (int z = -6; z <= 5; z++) {
+                CPos iglooPos = igloo.getInRegion(structureSeed, x, z, chunkRand);
+
+                if (igloo.canSpawn(iglooPos.getX(), iglooPos.getZ(), overworldBiomeSource)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private boolean hasMidgameTemples(int minCount) {
