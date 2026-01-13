@@ -49,13 +49,13 @@ public class EndStructureFilter {
         RPos gatewayRegion = gatewayPos.toRegionPos(20 << 4);
         EndCity city = new EndCity(Config.VERSION);
         CPos cityPos = city.getInRegion(structureSeed, gatewayRegion.getX(), gatewayRegion.getZ(), chunkRand);
+        EndBiomeSource endBiomeSource = new EndBiomeSource(Config.VERSION, structureSeed);
 
-        if (!(cityPos.distanceTo(gatewayPos.toChunkPos(), DistanceMetric.EUCLIDEAN) <= Config.END_CITY_DISTANCE) || !(cityPos.toBlockPos().getMagnitude() > 1024.0)) {
+        if (!(cityPos.distanceTo(gatewayPos.toChunkPos(), DistanceMetric.EUCLIDEAN) <= Config.END_CITY_DISTANCE) || !(cityPos.toBlockPos().getMagnitude() > 1024.0) || !city.canSpawn(cityPos.getX(), cityPos.getZ(), endBiomeSource)) {
             return false;
         }
 
         EndCityGenerator ecg = new EndCityGenerator(Config.VERSION);
-        EndBiomeSource endBiomeSource = new EndBiomeSource(Config.VERSION, structureSeed);
         EndTerrainGenerator endTerrainGenerator = new EndTerrainGenerator(endBiomeSource);
 
         if (!ecg.generate(endTerrainGenerator, cityPos, chunkRand)) {
